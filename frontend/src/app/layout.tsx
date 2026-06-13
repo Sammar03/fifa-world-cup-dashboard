@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Anton, DM_Sans } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { AppBar } from "@/components/app-bar";
 
 // DM Sans for body/UI/tables; Anton — a condensed sports-poster display face —
@@ -94,6 +95,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
