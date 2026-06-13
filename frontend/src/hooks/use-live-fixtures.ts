@@ -24,7 +24,8 @@ export function useLiveFixtures(initial: Fixture[]): Fixture[] {
 
     const id = setInterval(async () => {
       try {
-        const res = await getFixtures();
+        // revalidate: 0 → always fetch fresh while polling live scores.
+        const res = await getFixtures(undefined, { revalidate: 0 });
         setFixtures(res.fixtures);
       } catch {
         // Network blip: keep the last good data, try again next tick.

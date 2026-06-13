@@ -32,12 +32,21 @@ export class APIError extends Error {
   }
 }
 
-async function getJSON<T>(path: string, init?: RequestInit): Promise<T> {
+type GetOpts = { revalidate?: number; method?: string; body?: BodyInit };
+
+async function getJSON<T>(path: string, opts: GetOpts = {}): Promise<T> {
+  const { revalidate = 0, method, body } = opts;
   const res = await fetch(`${BASE_URL}${path}`, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
-    // Read endpoints serve fast-changing data; never cache at the fetch layer.
-    cache: "no-store",
+    method,
+    body,
+    headers: { "Content-Type": "application/json" },
+    // revalidate > 0 → cache the result in Next's Data Cache and refresh it
+    // every N seconds (ISR). Server-rendered pages then serve from cache instead
+    // of hitting the backend on every request — the main load-time win, and safe
+    // because ingestion updates on a similar cadence. revalidate 0 → always
+    // fresh: client-side live polling, /health, and POST /query. The `next`
+    // option is ignored for browser fetches, so live polling stays real-time.
+    ...(revalidate > 0 ? { next: { revalidate } } : { cache: "no-store" }),
   });
   if (!res.ok) {
     throw new APIError(res.status, `Request to ${path} failed (${res.status})`);
@@ -46,16 +55,22 @@ async function getJSON<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /** A fixture id that does not exist resolves to null so pages can call notFound(). */
-export async function getFixtures(params?: {
-  date?: string;
-  status?: FixtureStatus;
-}): Promise<FixturesResponse> {
+export async function getFixtures(
+  params?: {
+    date?: string;
+    status?: FixtureStatus;
+  },
+  opts?: { revalidate?: number },
+): Promise<FixturesResponse> {
   if (USE_MOCKS) return mock.getFixtures(params);
   const qs = new URLSearchParams();
   if (params?.date) qs.set("date", params.date);
   if (params?.status) qs.set("status", params.status);
   const q = qs.toString();
-  return getJSON<FixturesResponse>(`/fixtures${q ? `?${q}` : ""}`);
+  // Default 30s; the live-polling hook passes 0 to force fresh client fetches.
+  return getJSON<FixturesResponse>(`/fixtures${q ? `?${q}` : ""}`, {
+    revalidate: opts?.revalidate ?? 30,
+  });
 }
 
 export async function getFixture(
@@ -63,7 +78,9 @@ export async function getFixture(
 ): Promise<FixtureDetailResponse | null> {
   if (USE_MOCKS) return mock.getFixture(id);
   try {
-    return await getJSON<FixtureDetailResponse>(`/fixtures/${id}`);
+    return await getJSON<FixtureDetailResponse>(`/fixtures/${id}`, {
+      revalidate: 30,
+    });
   } catch (err) {
     if (err instanceof APIError && err.status === 404) return null;
     throw err;
@@ -79,7 +96,7 @@ export async function getGroups(): Promise<string[]> {
 export async function getStandings(group?: string): Promise<StandingsResponse> {
   if (USE_MOCKS) return mock.getStandings(group);
   const qs = group ? `?group=${encodeURIComponent(group)}` : "";
-  return getJSON<StandingsResponse>(`/standings${qs}`);
+  return getJSON<StandingsResponse>(`/standings${qs}`, { revalidate: 60 });
 }
 
 export async function getScorers(
@@ -87,13 +104,15 @@ export async function getScorers(
   limit = 50,
 ): Promise<ScorersResponse> {
   if (USE_MOCKS) return mock.getScorers(sort, limit);
-  return getJSON<ScorersResponse>(`/scorers?sort=${sort}&limit=${limit}`);
+  return getJSON<ScorersResponse>(`/scorers?sort=${sort}&limit=${limit}`, {
+    revalidate: 60,
+  });
 }
 
 export async function getTeam(id: number): Promise<TeamResponse | null> {
   if (USE_MOCKS) return mock.getTeam(id);
   try {
-    return await getJSON<TeamResponse>(`/teams/${id}`);
+    return await getJSON<TeamResponse>(`/teams/${id}`, { revalidate: 60 });
   } catch (err) {
     if (err instanceof APIError && err.status === 404) return null;
     throw err;
