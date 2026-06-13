@@ -23,7 +23,10 @@ router = APIRouter()
 VERSION = "1.0.0"
 
 
-@router.get("/health", response_model=HealthResponse)
+# GET + HEAD: uptime monitors (e.g. UptimeRobot) probe with HEAD by default;
+# a GET-only route answers 405 and gets flagged "down". HEAD runs the same
+# handler and returns 200 with the body stripped.
+@router.api_route("/health", methods=["GET", "HEAD"], response_model=HealthResponse)
 async def health(session: AsyncSession = Depends(get_session)) -> HealthResponse:
     settings = get_settings()
     stale_tables: list[str] = []
