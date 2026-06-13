@@ -219,8 +219,8 @@ freeze-pinning not done (top-level pins retained for readability).
 
 ### [DEBT-009] Rate Limiting Behind a Reverse Proxy
 **Priority:** DEBT  
-**Description:** slowapi keys on the client IP via `get_remote_address`. Behind the host's reverse proxy (e.g. Hugging Face Spaces) this can resolve to the proxy IP, so the 60/min limit may be shared across all users (and platform health checks) instead of being per-client. Acceptable for the portfolio demo. Fix by trusting `X-Forwarded-For` (e.g. a key func that reads the first hop) once real traffic warrants it. Surfaced during the 2026-06-13 deploy prep (see `docs/deploy.md`)  
-**Effort:** ~30 min
+**Description:** slowapi keys on the client IP via `get_remote_address`. **Confirmed live on HF Spaces (2026-06-14): rate limiting is effectively inert** — a 75-request burst returned only `200`s, no `429`. HF's edge proxy defeats the per-IP in-memory limiter (it rotates the source IP seen by the app and/or distributes across replicas), so no single bucket fills. Not critical for this app: the LLM is off the request path (cache-first; Groq only in the ingestion job, guarded by `AI_DAILY_BUDGET_USD`), GET endpoints are cheap DB reads, and `/ingest` is secret-gated — no per-request cost or mutation to abuse. Proper fix: key on `X-Forwarded-For` (first hop) **and** use shared storage (e.g. Redis) if HF runs >1 replica. See `docs/deploy.md`  
+**Effort:** ~1 hour (XFF keying + shared limiter store)
 
 ---
 
@@ -245,6 +245,8 @@ These are limitations that are known, accepted, and will not be fixed unless exp
 | KL-013 | AI budget breaker uses a flat conservative price estimate, not per-model pricing | Overestimates only — trips early, never late | Per-model price table if needed |
 | KL-015 | `npm audit` reports 6 high (esbuild/vite/vitest) + 2 moderate (postcss CSS-stringify XSS) | All in **devDependencies** (test toolchain) — not in the production bundle; esbuild advisories are dev-server/Deno-specific; postcss XSS needs untrusted CSS (we author all CSS) and has no upstream fix across Next versions yet | Bump vitest/@vitejs/plugin-react when peer-deps align |
 | KL-014 | A few scorers show position `—` / no clean-sheet enrichment when football-data and ESPN transliterate a name differently beyond word order (e.g. football-data "Hyun-Gyu Oh" vs ESPN "Oh Hyeon-Gyu") | Word-order mismatches are resolved by a sorted-token name key; true transliteration differences are not, and fuzzy matching would risk false positives | Add a curated alias map or fuzzy threshold if it becomes material |
+| KL-016 | On HF Spaces the API returns permissive CORS (reflects any Origin + `access-control-allow-credentials: true`) regardless of our `CORS_ORIGINS` allowlist | HF's edge proxy injects its own CORS headers (so Spaces can be embedded) in front of the app — the app-level allowlist can't override it. Not a vuln here: no cookies/sessions, GET data is public, `/ingest` is secret-gated, so there's no credential/CSRF vector. App config stays correct and self-enforces on a non-HF host | Host on a platform that doesn't rewrite CORS, if strict origin control is ever required |
+| KL-017 | Per-IP rate limiting is inert on HF Spaces (see DEBT-009) | HF proxy defeats the in-memory per-IP limiter; no per-request cost/mutation makes it low-risk for this app | DEBT-009 |
 
 ---
 
