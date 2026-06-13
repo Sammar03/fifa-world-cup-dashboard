@@ -67,3 +67,17 @@ app.include_router(scorers.router)
 app.include_router(teams.router)
 app.include_router(query.router)
 app.include_router(ingest.router)
+
+
+@app.get("/")
+async def root() -> dict:
+    """Friendly landing payload so the API root isn't a bare 404 (e.g. when the
+    Hugging Face Space URL is opened directly). The real data lives under the
+    documented routes below; interactive docs are at /docs."""
+    return {
+        "service": "FIFA World Cup Intelligence Dashboard API",
+        "status": "ok",
+        "docs": "/docs",
+        "health": "/health",
+        "endpoints": ["/fixtures", "/standings", "/scorers", "/fixtures/{id}", "/teams/{id}"],
+    }
