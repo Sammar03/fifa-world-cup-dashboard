@@ -1,6 +1,6 @@
 #!/bin/sh
-# Production entrypoint (Koyeb). Runs DB migrations, seeds once (idempotent),
-# then serves the API on the platform-provided $PORT.
+# Production entrypoint (Render / any Docker PaaS). Runs DB migrations, seeds
+# once (idempotent), then serves the API on the platform-provided $PORT.
 #
 # Seeding is deliberately NON-FATAL: scripts/seed.py raises SystemExit if ESPN /
 # openfootball are momentarily unreachable, and we must never let a transient

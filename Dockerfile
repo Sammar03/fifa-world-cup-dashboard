@@ -1,8 +1,8 @@
-# Production image for Koyeb. Build context = repo ROOT (it needs both backend/
-# and the root-level scripts/ for migrations + seeding).
+# Production image for Render (or any Docker PaaS). Build context = repo ROOT
+# (it needs both backend/ and the root-level scripts/ for migrations + seeding).
 #
 # Local development uses backend/Dockerfile via docker-compose instead — that one
-# has a narrower context (./backend) and a fixed port; do not point Koyeb at it.
+# has a narrower context (./backend) and a fixed port; do not point Render at it.
 FROM python:3.13-slim
 
 WORKDIR /app
