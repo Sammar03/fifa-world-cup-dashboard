@@ -1,3 +1,17 @@
+---
+title: FIFA World Cup API
+emoji: 🏆
+colorFrom: green
+colorTo: indigo
+sdk: docker
+app_port: 8000
+pinned: false
+---
+
+<!-- The YAML block above configures the Hugging Face Space (backend deploy).
+     GitHub renders it as a metadata table; HF reads it to build the Dockerfile
+     and route traffic to port 8000. See docs/deploy.md. -->
+
 # FIFA World Cup Intelligence Dashboard
 
 Live fixtures, self-computed standings, scorer leaderboards, team stats, and

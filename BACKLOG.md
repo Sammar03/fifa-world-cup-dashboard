@@ -219,7 +219,7 @@ freeze-pinning not done (top-level pins retained for readability).
 
 ### [DEBT-009] Rate Limiting Behind a Reverse Proxy
 **Priority:** DEBT  
-**Description:** slowapi keys on the client IP via `get_remote_address`. Behind Render's proxy this can resolve to the proxy IP, so the 60/min limit may be shared across all users (and platform health checks) instead of being per-client. Acceptable for the portfolio demo. Fix by trusting `X-Forwarded-For` (e.g. a key func that reads the first hop) once real traffic warrants it. Surfaced during the 2026-06-13 deploy prep (see `docs/deploy.md`)  
+**Description:** slowapi keys on the client IP via `get_remote_address`. Behind the host's reverse proxy (e.g. Hugging Face Spaces) this can resolve to the proxy IP, so the 60/min limit may be shared across all users (and platform health checks) instead of being per-client. Acceptable for the portfolio demo. Fix by trusting `X-Forwarded-For` (e.g. a key func that reads the first hop) once real traffic warrants it. Surfaced during the 2026-06-13 deploy prep (see `docs/deploy.md`)  
 **Effort:** ~30 min
 
 ---

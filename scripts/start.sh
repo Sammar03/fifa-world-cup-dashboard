@@ -1,6 +1,7 @@
 #!/bin/sh
-# Production entrypoint (Render / any Docker PaaS). Runs DB migrations, seeds
-# once (idempotent), then serves the API on the platform-provided $PORT.
+# Production entrypoint (Hugging Face Spaces / any Docker PaaS). Runs DB
+# migrations, seeds once (idempotent), then serves the API. Binds ${PORT:-8000};
+# HF sets no PORT, so it listens on 8000 (matches app_port in README.md).
 #
 # Seeding is deliberately NON-FATAL: scripts/seed.py raises SystemExit if ESPN /
 # openfootball are momentarily unreachable, and we must never let a transient
