@@ -48,13 +48,24 @@ Repo: <https://github.com/Sammar03/fifa-world-cup-dashboard> (branch `main`).
    `https://huggingface.co/spaces/Sammar03/fifa-world-cup-api`.
 
 ### 3b. Push our code into the Space
-HF Spaces are their own git repos. Push our repo into it (run from the project root).
-Authenticate with your **HF username + an access token** (create one at
-<https://huggingface.co/settings/tokens> → "Write" role; use it as the git password).
+HF Spaces are their own git repos. **HF rejects binary files anywhere in the pushed
+history** (it wants them in Xet/LFS), and our `frontend/` has a PNG + favicon. The HF
+Space is the *backend* and the Dockerfile ignores `frontend/` anyway, so we push a
+**backend-only orphan branch** (`hf-clean`) — a single commit with no frontend and no
+binaries in its history. This branch already exists locally and was pushed:
 
 ```bash
-git remote add hf https://huggingface.co/spaces/Sammar03/fifa-world-cup-api
-git push --force hf main          # --force overwrites HF's auto-created README
+# remote (already added):
+#   git remote add hf https://huggingface.co/spaces/Sammar03/fifa-world-cup-api
+git push --force hf hf-clean:main     # auth: HF username + a "Write" access token
+```
+
+To re-deploy backend changes later: rebuild the orphan branch from `main` and re-push:
+```bash
+git branch -D hf-clean
+git checkout --orphan hf-clean && git rm -r --cached frontend >/dev/null
+git commit -m "HF backend deploy" && git push --force hf hf-clean:main
+git checkout -f main
 ```
 
 The `README.md` YAML frontmatter (`sdk: docker`, `app_port: 8000`) tells HF to build
