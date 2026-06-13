@@ -1,0 +1,22 @@
+# Keep the Koyeb build context small and the image clean. The root Dockerfile
+# only COPYs backend/ and scripts/, but these patterns prune what slips in.
+.git/
+.venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.ruff_cache/
+**/*.db
+.env
+.env.*
+!.env.example
+
+# Frontend is deployed separately on Vercel — never part of the backend image.
+frontend/
+
+# Local-only / editor noise
+node_modules/
+.next/
+*.log
+.DS_Store
+Thumbs.db

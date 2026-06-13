@@ -1,0 +1,37 @@
+# Local development stack: Postgres + FastAPI backend (CLAUDE.md §3).
+# The frontend runs separately via `npm run dev` in /frontend.
+#
+#   docker compose up -d postgres        # database only (run backend in venv)
+#   docker compose up --build            # full stack
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: worldcup
+      POSTGRES_PASSWORD: worldcup
+      POSTGRES_DB: worldcup
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U worldcup -d worldcup"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    env_file:
+      - .env
+    environment:
+      # Inside the compose network the DB host is the service name, not localhost.
+      DATABASE_URL: postgresql+asyncpg://worldcup:worldcup@postgres:5432/worldcup
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

@@ -1,0 +1,30 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+// Verifies the typed client builds the correct backend URL when mocks are off.
+describe("api client", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it("getFixtures calls the backend URL with query params", async () => {
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_USE_MOCKS", "false");
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "http://api.test");
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ fixtures: [], generated_at: "now" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const api = await import("@/lib/api");
+    await api.getFixtures({ status: "live" });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://api.test/fixtures?status=live",
+      expect.objectContaining({ cache: "no-store" }),
+    );
+  });
+});

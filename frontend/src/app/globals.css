@@ -1,0 +1,306 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* =============================================================================
+   FIFA World Cup Intelligence Dashboard — Design tokens (DARK)
+   HARD CONSTRAINTS (FIFA 2026 palette) — STRICT:
+   - Exactly four colors: #222E71 (navy), #308A2F (green), #B6141B (red),
+     #313537 (charcoal) — plus white.
+   - #313537 is the flat page background. Greys (borders, surfaces, muted text)
+     are ONLY white/charcoal mixes. Accent tints are ONLY a palette color mixed
+     into the charcoal. No other hue, and no lightened "5th" colors.
+   - No colored glows. Depth comes from borders and a neutral drop shadow only.
+   - Single typeface: DM Sans.
+   ========================================================================== */
+
+@theme {
+  /* The four palette colors (+ white) */
+  --color-brand: #222e71;
+  --color-positive: #308a2f;
+  --color-negative: #b6141b;
+  --color-pitch: #313537;
+  --color-paper: #ffffff;
+
+  /* Foreground — white tinted toward the charcoal so it never glares */
+  --color-ink: color-mix(in srgb, #ffffff 93%, #313537);
+  --color-muted: color-mix(in srgb, #ffffff 60%, #313537);
+
+  /* Surfaces — white lifted over the charcoal (neutral greys, not a new hue) */
+  --color-card: color-mix(in srgb, #ffffff 5%, #313537);
+  --color-surface: color-mix(in srgb, #ffffff 9%, #313537);
+  --color-line: color-mix(in srgb, #ffffff 14%, #313537);
+  --color-line-strong: color-mix(in srgb, #ffffff 28%, #313537);
+
+  /* Washes — a palette color settled into the charcoal (panel backgrounds) */
+  --color-brand-wash: color-mix(in srgb, #222e71 40%, #313537);
+  --color-positive-wash: color-mix(in srgb, #308a2f 26%, #313537);
+  --color-negative-wash: color-mix(in srgb, #b6141b 26%, #313537);
+
+  /* Type — DM Sans for body/UI; Anton (condensed sports display) for
+     headlines and scoreboard numerals (variables injected by next/font) */
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-anton), var(--font-dm-sans), sans-serif;
+
+  /* Radius family — one family, do not mix */
+  --radius-card: 8px;
+  --radius-pill: 999px;
+
+  /* Elevation — a neutral (colorless) drop shadow for hover lift only */
+  --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-pitch);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "kern";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* FIFA 2026 emblem artwork as the page backdrop — shown at full strength,
+     fixed behind all content. Every card sits on an opaque surface, so card
+     content stays legible directly over the artwork. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("/wc26-pattern.svg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* All numeric data uses tabular figures so digits align in columns */
+  th,
+  td,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Visible keyboard focus everywhere — green ring (palette accent) */
+  :focus-visible {
+    outline: 2px solid var(--color-positive);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-brand);
+    color: var(--color-paper);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Page container: 1200px max, 24px gutters (16px mobile) */
+  .app-container {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .app-container {
+      padding-inline: 24px;
+    }
+  }
+
+  /* Signature element: the three host-nation colors in one stripe
+     (green · red · navy) — all pure palette colors. */
+  .tri-stripe {
+    background: linear-gradient(
+      90deg,
+      var(--color-positive) 0%,
+      var(--color-positive) 33.3%,
+      var(--color-negative) 33.3%,
+      var(--color-negative) 66.6%,
+      var(--color-brand) 66.6%,
+      var(--color-brand) 100%
+    );
+  }
+
+  /* Page-title underline accent */
+  .title-accent {
+    display: block;
+    width: 56px;
+    height: 4px;
+    margin-top: 10px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(
+      90deg,
+      var(--color-positive) 0%,
+      var(--color-positive) 33.3%,
+      var(--color-negative) 33.3%,
+      var(--color-negative) 66.6%,
+      var(--color-brand) 66.6%,
+      var(--color-brand) 100%
+    );
+  }
+
+  /* Display headlines — condensed, uppercase, tight: the scoreboard voice */
+  .display {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    font-weight: 400;
+    line-height: 0.95;
+  }
+
+  /* Broadcast lower-third panel: one notched corner, like stadium TV graphics */
+  .notch {
+    clip-path: polygon(
+      0 0,
+      calc(100% - 16px) 0,
+      100% 16px,
+      100% 100%,
+      0 100%
+    );
+  }
+
+  .notch-sm {
+    clip-path: polygon(
+      0 0,
+      calc(100% - 10px) 0,
+      100% 10px,
+      100% 100%,
+      0 100%
+    );
+  }
+
+  /* Scoreboard section header: small uppercase tag + hairline rule */
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-ink);
+    background-color: var(--color-surface);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  }
+
+  /* Interactive card: lifts on hover with a neutral (colorless) shadow */
+  .card-interactive {
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-line-strong);
+    box-shadow: var(--shadow-pop);
+  }
+
+  /* Sweeping shimmer for skeletons (neutral white sheen) */
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-card);
+  }
+
+  .skeleton-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, #ffffff 7%, transparent),
+      transparent
+    );
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Stat-comparison bars grow out from the center on load */
+  .bar-home {
+    transform-origin: right;
+    animation: bar-grow 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .bar-away {
+    transform-origin: left;
+    animation: bar-grow 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes bar-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Sections fade-and-rise as they mount */
+  .rise-in {
+    animation: rise-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* LIVE pulsing dot — the single signal that a match is live */
+  .live-dot {
+    position: relative;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-paper);
+  }
+
+  .live-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-paper);
+    animation: live-pulse 1.6s ease-out infinite;
+  }
+
+  @keyframes live-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    70%,
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+}
