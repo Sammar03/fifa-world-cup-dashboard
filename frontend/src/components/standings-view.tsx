@@ -20,31 +20,36 @@ export function StandingsView({
 
   return (
     <div className="space-y-4">
-      <div
-        role="tablist"
-        aria-label="Group"
-        className="flex flex-wrap gap-1.5"
-      >
-        {groups.map((g) => {
-          const selected = g === active;
-          return (
-            <button
-              key={g}
-              role="tab"
-              type="button"
-              aria-selected={selected}
-              onClick={() => setActive(g)}
-              className={cn(
-                "notch-sm border px-3.5 py-1.5 text-[0.875rem] font-medium transition-colors",
-                selected
-                  ? "border-positive text-positive"
-                  : "border-line text-muted hover:border-line-strong hover:text-ink",
-              )}
-            >
-              Group {g}
-            </button>
-          );
-        })}
+      <div className="flex items-center gap-3">
+        <span className="text-[0.7rem] font-semibold uppercase tracking-wider text-muted">
+          Group
+        </span>
+        {/* Compact single-letter chips: a tidy row on desktop, wrapping to a
+            couple of rows on mobile instead of a tall cluster of "Group X"
+            buttons. The aria-label keeps each one fully described. */}
+        <div role="tablist" aria-label="Group" className="flex flex-wrap gap-1.5">
+          {groups.map((g) => {
+            const selected = g === active;
+            return (
+              <button
+                key={g}
+                role="tab"
+                type="button"
+                aria-selected={selected}
+                aria-label={`Group ${g}`}
+                onClick={() => setActive(g)}
+                className={cn(
+                  "notch-sm flex size-8 items-center justify-center border text-[0.875rem] font-semibold transition-colors",
+                  selected
+                    ? "border-positive text-positive"
+                    : "border-line text-muted hover:border-line-strong hover:text-ink",
+                )}
+              >
+                {g}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {rows.length > 0 ? (

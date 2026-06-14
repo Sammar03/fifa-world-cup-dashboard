@@ -55,9 +55,35 @@ describe("useLiveFixtures", () => {
     expect(getFixtures).not.toHaveBeenCalled();
   });
 
-  it("does not poll when no fixture is live", async () => {
+  it("does not poll when every fixture is finished", async () => {
     vi.useFakeTimers();
     render(<Harness fixtures={[fixture("finished")]} />);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(LIVE_POLL_INTERVAL_MS * 2);
+    });
+    expect(getFixtures).not.toHaveBeenCalled();
+  });
+
+  it("polls a scheduled match once its kickoff window is reached", async () => {
+    vi.useFakeTimers();
+    // Kicked off a minute ago but the page's snapshot still says "scheduled":
+    // the hook should poll anyway to catch the live transition.
+    const f = fixture("scheduled");
+    f.kickoff_at = new Date(Date.now() - 60_000).toISOString();
+    render(<Harness fixtures={[f]} />);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(LIVE_POLL_INTERVAL_MS);
+    });
+    expect(getFixtures).toHaveBeenCalled();
+  });
+
+  it("does not poll for a scheduled match far from kickoff", async () => {
+    vi.useFakeTimers();
+    const f = fixture("scheduled");
+    f.kickoff_at = new Date(Date.now() + 6 * 60 * 60_000).toISOString(); // 6h away
+    render(<Harness fixtures={[f]} />);
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(LIVE_POLL_INTERVAL_MS * 2);
