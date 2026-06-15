@@ -8,24 +8,13 @@ app_port: 8000
 pinned: false
 ---
 
-<!-- The YAML block above configures the Hugging Face Space (backend deploy).
-     GitHub renders it as a metadata table; HF reads it to build the Dockerfile
-     and route traffic to port 8000. See docs/deploy.md. -->
-
 # FIFA World Cup Intelligence Dashboard
 
 Live fixtures, self-computed standings, scorer leaderboards, team stats, and
 AI match insights for the 2026 World Cup — built as a portfolio project that
 demonstrates four competencies end to end:
 
-| Competency | Where to look |
-|---|---|
-| **AI engineering** | [backend/app/ai/](backend/app/ai/) — multi-provider client ([providers.py](backend/app/ai/providers.py)), versioned prompt file ([prompts/match_insight_v1.txt](backend/app/ai/prompts/match_insight_v1.txt)), cached generation with budget breaker ([insights.py](backend/app/ai/insights.py), [budget.py](backend/app/ai/budget.py)) |
-| **API integration** | [backend/app/ingestion/fetcher.py](backend/app/ingestion/fetcher.py) — ESPN + football-data.org + openfootball, timeouts/retries/rate-limit spacing, Pydantic validation at every boundary ([ingestion/schemas/](backend/app/ingestion/schemas/)) |
-| **Data processing** | [backend/app/ingestion/](backend/app/ingestion/) — fetch → validate → normalize → upsert → aggregate → reconcile → enrich ([scheduler.py](backend/app/ingestion/scheduler.py)); two-source reconciliation in [reconciliation/checker.py](backend/app/reconciliation/checker.py) |
-| **Dashboard development** | [frontend/](frontend/) — Next.js 15 App Router, Server Components, live polling, responsive |
-
-## Architecture (ADR-002: cache-first)
+## Architecture (cache-first)
 
 ```
 ESPN ──┐
