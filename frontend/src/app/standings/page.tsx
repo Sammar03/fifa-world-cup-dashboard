@@ -11,10 +11,15 @@ export const metadata: Metadata = {
 // view so switching groups is instant with no network call (CLAUDE.md §4.2).
 export default async function StandingsPage() {
   const groups = await getGroups();
-  const results = await Promise.all(groups.map((g) => getStandings(g)));
-  const standingsByGroup: Record<string, Standing[]> = Object.fromEntries(
-    results.map((r) => [r.group, r.standings]),
-  );
+  // allSettled so one group's fetch failing (or a transient backend blip at
+  // build/render time) degrades that group to empty instead of failing the
+  // whole prerender (CLAUDE.md §12); ISR refills on the next revalidate.
+  const results = await Promise.allSettled(groups.map((g) => getStandings(g)));
+  const standingsByGroup: Record<string, Standing[]> = {};
+  results.forEach((result, i) => {
+    standingsByGroup[groups[i]] =
+      result.status === "fulfilled" ? result.value.standings : [];
+  });
 
   return (
     <div className="space-y-6">

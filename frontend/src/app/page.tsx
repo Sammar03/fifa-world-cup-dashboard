@@ -1,3 +1,4 @@
+import type { Fixture } from "@/types";
 import { getFixtures } from "@/lib/api";
 import { FixturesBoard } from "@/components/fixtures-board";
 import { NLQueryBox } from "@/components/nl-query-box";
@@ -5,7 +6,15 @@ import { NLQueryBox } from "@/components/nl-query-box";
 // Home: live + upcoming fixtures grouped by day. Server Component — data is
 // fetched server-side from the dashboard's own API (CLAUDE.md §7.2).
 export default async function HomePage() {
-  const { fixtures } = await getFixtures();
+  // Tolerate a backend hiccup at build/render time: render an empty board
+  // rather than failing the prerender (CLAUDE.md §12). The client poll and ISR
+  // revalidation refill it once the backend responds.
+  let fixtures: Fixture[] = [];
+  try {
+    ({ fixtures } = await getFixtures());
+  } catch {
+    fixtures = [];
+  }
 
   return (
     <div className="space-y-8">
