@@ -14,17 +14,25 @@ export const metadata: Metadata = {
 // assisters / goalkeepers don't appear in the goals top-N (0 goals), so we fetch
 // all three boards and merge them — a single goals-sorted fetch would leave the
 // Assists and Clean-sheets tabs nearly empty once enough matches are played.
+//
+// allSettled, not all: a single board failing (e.g. an older backend that
+// doesn't know the clean_sheets sort yet, or a transient blip) must not blank
+// the whole page or fail the build prerender (CLAUDE.md §12) — we merge whatever
+// boards did come back.
 export default async function ScorersPage() {
-  const [goals, assists, cleanSheets] = await Promise.all([
+  const results = await Promise.allSettled([
     getScorers("goals", 50),
     getScorers("assists", 50),
     getScorers("clean_sheets", 50),
   ]);
   const byPlayer = new Map<string, ScorerStat>();
-  for (const s of [...goals.scorers, ...assists.scorers, ...cleanSheets.scorers]) {
-    // Same DB row across sorts, so last-write-wins is fine; PlayerStatsView
-    // re-ranks each board client-side and ignores the server `rank`.
-    byPlayer.set(`${s.player_name}|${s.team_code}`, s);
+  for (const result of results) {
+    if (result.status !== "fulfilled") continue;
+    for (const s of result.value.scorers) {
+      // Same DB row across sorts, so last-write-wins is fine; PlayerStatsView
+      // re-ranks each board client-side and ignores the server `rank`.
+      byPlayer.set(`${s.player_name}|${s.team_code}`, s);
+    }
   }
   const scorers = [...byPlayer.values()];
 
