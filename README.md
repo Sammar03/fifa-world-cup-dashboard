@@ -1,13 +1,3 @@
----
-title: FIFA World Cup API
-emoji: 🏆
-colorFrom: green
-colorTo: indigo
-sdk: docker
-app_port: 8000
-pinned: false
----
-
 # FIFA World Cup Intelligence Dashboard
 
 Live fixtures, self-computed standings, scorer leaderboards, team stats, and
