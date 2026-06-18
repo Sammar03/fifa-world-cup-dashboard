@@ -511,11 +511,15 @@ export function getStandings(group?: string): StandingsResponse {
 }
 
 export function getScorers(
-  sort: "goals" | "assists" = "goals",
+  sort: "goals" | "assists" | "clean_sheets" = "goals",
   limit = 50,
 ): ScorersResponse {
+  const pool =
+    sort === "clean_sheets"
+      ? ALL_SCORERS.filter((s) => s.clean_sheets !== null)
+      : ALL_SCORERS;
   return {
-    scorers: sortScorers(ALL_SCORERS, sort).slice(0, limit),
+    scorers: sortScorers(pool, sort).slice(0, limit),
     updated_at: now(),
   };
 }

@@ -19,7 +19,7 @@ router = APIRouter()
 
 @router.get("/scorers", response_model=ScorersResponse)
 async def scorers(
-    sort: Literal["goals", "assists"] = "goals",
+    sort: Literal["goals", "assists", "clean_sheets"] = "goals",
     limit: int = Query(default=50, ge=1, le=100),
     session: AsyncSession = Depends(get_session),
 ) -> ScorersResponse:
@@ -52,8 +52,12 @@ async def scorers(
 
         if sort == "goals":
             items.sort(key=lambda s: (-s.goals, s.matches_played, -s.assists, s.player_name))
-        else:
+        elif sort == "assists":
             items.sort(key=lambda s: (-s.assists, s.matches_played, -s.goals, s.player_name))
+        else:  # clean_sheets — goalkeeper board (others have null clean_sheets and
+            # never appear in the goals/assists top-N, so they need their own sort)
+            items = [s for s in items if s.clean_sheets is not None]
+            items.sort(key=lambda s: (-(s.clean_sheets or 0), s.matches_played, s.player_name))
 
         items = items[:limit]
         for index, item in enumerate(items):

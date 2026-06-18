@@ -75,11 +75,15 @@ export async function getFixtures(
 
 export async function getFixture(
   id: number,
+  opts?: { revalidate?: number },
 ): Promise<FixtureDetailResponse | null> {
   if (USE_MOCKS) return mock.getFixture(id);
   try {
+    // Default 30s ISR for the server render; the live-polling hook passes 0 to
+    // force fresh client fetches so the match page tracks live scores in step
+    // with the home board.
     return await getJSON<FixtureDetailResponse>(`/fixtures/${id}`, {
-      revalidate: 30,
+      revalidate: opts?.revalidate ?? 30,
     });
   } catch (err) {
     if (err instanceof APIError && err.status === 404) return null;
@@ -100,7 +104,7 @@ export async function getStandings(group?: string): Promise<StandingsResponse> {
 }
 
 export async function getScorers(
-  sort: "goals" | "assists" = "goals",
+  sort: "goals" | "assists" | "clean_sheets" = "goals",
   limit = 50,
 ): Promise<ScorersResponse> {
   if (USE_MOCKS) return mock.getScorers(sort, limit);
