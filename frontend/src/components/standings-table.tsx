@@ -26,14 +26,14 @@ export function StandingsTable({ standings }: { standings: Standing[] }) {
           <TableHead className="w-10 text-center">Pos</TableHead>
           <TableHead>Team</TableHead>
           <TableHead className="text-right">P</TableHead>
-          <TableHead className="text-right">W</TableHead>
-          <TableHead className="text-right">D</TableHead>
-          <TableHead className="text-right">L</TableHead>
-          <TableHead className="text-right">GF</TableHead>
-          <TableHead className="text-right">GA</TableHead>
+          <TableHead className="hidden text-right sm:table-cell">W</TableHead>
+          <TableHead className="hidden text-right sm:table-cell">D</TableHead>
+          <TableHead className="hidden text-right sm:table-cell">L</TableHead>
+          <TableHead className="hidden text-right sm:table-cell">GF</TableHead>
+          <TableHead className="hidden text-right sm:table-cell">GA</TableHead>
           <TableHead className="text-right">GD</TableHead>
           <TableHead className="text-right">Pts</TableHead>
-          <TableHead className="pl-4">Form</TableHead>
+          <TableHead className="hidden pl-4 sm:table-cell">Form</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -62,18 +62,20 @@ export function StandingsTable({ standings }: { standings: Standing[] }) {
               <TableCell>
                 <Link
                   href={`/team/${row.team.id}`}
-                  className="flex items-center gap-2 font-medium text-ink transition-colors hover:text-positive"
+                  className="flex min-w-0 items-center gap-2 font-medium text-ink transition-colors hover:text-positive"
                 >
                   <TeamFlag src={row.team.flag_url} name={row.team.name} width={20} />
-                  <span className="truncate">{row.team.name}</span>
+                  <span className="block max-w-[45vw] truncate sm:max-w-none">
+                    {row.team.name}
+                  </span>
                 </Link>
               </TableCell>
               <TableCell className="text-right">{row.played}</TableCell>
-              <TableCell className="text-right">{row.won}</TableCell>
-              <TableCell className="text-right">{row.drawn}</TableCell>
-              <TableCell className="text-right">{row.lost}</TableCell>
-              <TableCell className="text-right">{row.goals_for}</TableCell>
-              <TableCell className="text-right">{row.goals_against}</TableCell>
+              <TableCell className="hidden text-right sm:table-cell">{row.won}</TableCell>
+              <TableCell className="hidden text-right sm:table-cell">{row.drawn}</TableCell>
+              <TableCell className="hidden text-right sm:table-cell">{row.lost}</TableCell>
+              <TableCell className="hidden text-right sm:table-cell">{row.goals_for}</TableCell>
+              <TableCell className="hidden text-right sm:table-cell">{row.goals_against}</TableCell>
               <TableCell
                 className={cn(
                   "text-right",
@@ -86,7 +88,7 @@ export function StandingsTable({ standings }: { standings: Standing[] }) {
               <TableCell className="display text-right text-[1.0625rem] text-ink">
                 {row.points}
               </TableCell>
-              <TableCell className="pl-4">
+              <TableCell className="hidden pl-4 sm:table-cell">
                 <FormChips form={row.form} />
               </TableCell>
             </TableRow>

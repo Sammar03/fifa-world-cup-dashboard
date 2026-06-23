@@ -105,9 +105,11 @@ export function PlayerStatsView({ players }: { players: ScorerStat[] }) {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="flex items-center gap-2">
-                    <span className="font-medium text-ink">{s.player_name}</span>
-                    <span className="rounded bg-surface px-1 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.04em] text-muted">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="block max-w-[40vw] truncate font-medium text-ink sm:max-w-none">
+                      {s.player_name}
+                    </span>
+                    <span className="shrink-0 rounded bg-surface px-1 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.04em] text-muted">
                       {s.position}
                     </span>
                   </span>

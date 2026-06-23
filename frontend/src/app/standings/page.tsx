@@ -24,7 +24,7 @@ export default async function StandingsPage() {
   return (
     <div className="space-y-6">
       <header className="rise-in py-2">
-        <h1 className="display text-[3rem] md:text-[4rem]">Standings</h1>
+        <h1 className="display text-[2.5rem] sm:text-[3rem] md:text-[4rem]">Standings</h1>
         <span className="title-accent" aria-hidden />
       </header>
 

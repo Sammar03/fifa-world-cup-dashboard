@@ -55,7 +55,7 @@ export function TableHead({
     <th
       scope="col"
       className={cn(
-        "px-3 py-2 text-left text-[0.75rem] font-medium uppercase tracking-[0.02em] text-muted",
+        "px-2 py-2 text-left text-[0.75rem] font-medium uppercase tracking-[0.02em] text-muted sm:px-3",
         className,
       )}
       {...props}
@@ -67,5 +67,10 @@ export function TableCell({
   className,
   ...props
 }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("px-3 py-2.5 align-middle", className)} {...props} />;
+  return (
+    <td
+      className={cn("px-2 py-2.5 align-middle sm:px-3", className)}
+      {...props}
+    />
+  );
 }

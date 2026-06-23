@@ -19,7 +19,7 @@ export default async function HomePage() {
   return (
     <div className="space-y-8">
       <header className="rise-in py-2">
-        <h1 className="display text-[3rem] md:text-[4rem]">Fixtures</h1>
+        <h1 className="display text-[2.5rem] sm:text-[3rem] md:text-[4rem]">Fixtures</h1>
         <span className="title-accent" aria-hidden />
       </header>
 

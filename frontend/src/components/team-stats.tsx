@@ -37,10 +37,15 @@ export function TeamStats({
     <div className="space-y-6">
       <div className="rise-in notch relative overflow-hidden bg-gradient-to-br from-brand to-brand-wash p-4 text-paper md:p-6">
         <div className="tri-stripe absolute inset-x-0 bottom-0 h-[3px]" aria-hidden />
-        <div className="flex items-center gap-4">
-          <TeamFlag src={team.flag_url} name={team.name} width={48} />
-          <div>
-            <h1 className="display text-[2.25rem] md:text-[2.75rem]">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <TeamFlag
+            src={team.flag_url}
+            name={team.name}
+            width={48}
+            className="shrink-0"
+          />
+          <div className="min-w-0">
+            <h1 className="display text-[1.5rem] leading-[0.95] break-words sm:text-[2.25rem] md:text-[2.75rem]">
               {team.name}
             </h1>
             <p className="text-[0.875rem] text-paper/80">Group {team.group_label}</p>

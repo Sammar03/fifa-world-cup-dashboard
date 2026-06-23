@@ -45,7 +45,7 @@ export function MatchView({ initial }: { initial: FixtureDetailResponse }) {
         </Link>
       </div>
 
-      <header className="rise-in notch relative overflow-hidden bg-card p-6 md:p-8">
+      <header className="rise-in notch relative overflow-hidden bg-card p-4 sm:p-6 md:p-8">
         <div className="tri-stripe absolute inset-x-0 top-0 h-[3px]" aria-hidden />
         <div className="mb-4 flex items-center justify-between">
           {status === "live" ? (
@@ -79,7 +79,7 @@ export function MatchView({ initial }: { initial: FixtureDetailResponse }) {
                 <LocalTime iso={fixture.kickoff_at} withDate />
               </div>
             ) : (
-              <div className="display text-[3.5rem] text-ink md:text-[4.5rem]">
+              <div className="display text-[2.75rem] text-ink sm:text-[3.5rem] md:text-[4.5rem]">
                 {home_score ?? 0}
                 <span className="px-2 text-muted">–</span>
                 {away_score ?? 0}
@@ -107,7 +107,7 @@ export function MatchView({ initial }: { initial: FixtureDetailResponse }) {
 
       {goals.length > 0 && (
         <section
-          className="rise-in notch border-l-2 border-line-strong bg-card p-6"
+          className="rise-in notch border-l-2 border-line-strong bg-card p-4 sm:p-6"
           style={{ animationDelay: "120ms" }}
         >
           <GoalTimeline goals={goals} homeTeam={home_team} awayTeam={away_team} />
@@ -116,7 +116,7 @@ export function MatchView({ initial }: { initial: FixtureDetailResponse }) {
 
       {hasStats && (
         <section
-          className="rise-in notch border-l-2 border-line-strong bg-card p-6"
+          className="rise-in notch border-l-2 border-line-strong bg-card p-4 sm:p-6"
           style={{ animationDelay: "200ms" }}
         >
           <h2 className="display mb-5 text-[1.375rem]">Match stats</h2>
