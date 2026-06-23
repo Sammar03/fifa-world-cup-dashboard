@@ -21,10 +21,29 @@ const anton = Anton({
   variable: "--font-anton",
 });
 
+const SITE_URL = "https://fifa-world-cup-dashboard-sandy.vercel.app";
+const TITLE = "World Cup 2026 — Intelligence Dashboard";
+const DESCRIPTION =
+  "Live FIFA World Cup 2026 fixtures, standings, top scorers, team stats, and AI match insights.";
+
+// metadataBase makes the file-based opengraph-image.jpeg / twitter-image.jpeg
+// (in this app/ dir) resolve to absolute URLs, which social crawlers require.
 export const metadata: Metadata = {
-  title: "World Cup 2026 — Intelligence Dashboard",
-  description:
-    "Live FIFA World Cup 2026 fixtures, standings, top scorers, team stats, and AI match insights.",
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: TITLE,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
