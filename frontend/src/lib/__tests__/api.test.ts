@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-// Verifies the typed client builds the correct backend URL when mocks are off.
+// Verifies the typed client builds the correct backend URL.
 describe("api client", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
@@ -10,7 +10,6 @@ describe("api client", () => {
 
   it("getFixtures calls the backend URL with query params", async () => {
     vi.resetModules();
-    vi.stubEnv("NEXT_PUBLIC_USE_MOCKS", "false");
     vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "http://api.test");
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
@@ -31,7 +30,6 @@ describe("api client", () => {
 
   it("forces a fresh fetch when revalidate: 0 is passed (live polling)", async () => {
     vi.resetModules();
-    vi.stubEnv("NEXT_PUBLIC_USE_MOCKS", "false");
     vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "http://api.test");
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,

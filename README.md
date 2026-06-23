@@ -42,7 +42,7 @@ cd backend && ../.venv/Scripts/python -m uvicorn app.main:app --port 8001
 
 # 6. Frontend
 cd frontend && npm install && npm run dev
-#    frontend/.env.local: NEXT_PUBLIC_USE_MOCKS=false, NEXT_PUBLIC_API_BASE_URL=http://localhost:8001
+#    frontend/.env.local: NEXT_PUBLIC_API_BASE_URL=http://localhost:8001
 ```
 
 Verify: `python scripts/check_keys.py` (validates both API keys + live response
@@ -95,8 +95,21 @@ breaker.
 
 ## Deploy
 
-Frontend → Vercel (set `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_USE_MOCKS=false`).
+Frontend → Vercel (set `NEXT_PUBLIC_API_BASE_URL`).
 Backend + Postgres → Railway/Render/Fly via [backend/Dockerfile](backend/Dockerfile);
 run `alembic upgrade head` and `scripts/seed.py` once, set all `.env` values
 (`ENVIRONMENT=production`, `CORS_ORIGINS=<vercel-domain>`). Pre-deploy:
-checklist in CLAUDE.md §14.
+checklist in CLAUDE.md §14 (see Project docs below).
+
+## Project docs
+
+The full spec, requirements, ADRs, and backlog were moved out of the repo to keep
+it lean. They live in the context archive at
+`Projects/Reference/fifa-world-cup-dashboard/`:
+
+- `CLAUDE.md` — engineering operating instructions
+- `docs/prd.md` — product requirements
+- `docs/api-research.md` — data sources & correctness strategy
+- `docs/dashboard.md` — design system
+- `docs/adr/` — architecture decision records (ADR-001…004)
+- `BACKLOG.md` — deferred features, debt, known limitations

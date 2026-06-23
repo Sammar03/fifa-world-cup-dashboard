@@ -2,8 +2,9 @@
 
 The Next.js 15 frontend for the FIFA World Cup Intelligence Dashboard: live
 fixtures, group standings, top scorers, team stats, match detail, and AI match
-insights. Built per `../docs/dashboard.md` (four colors, DM Sans, strict column
-tracks) and the architecture in `../CLAUDE.md`.
+insights. Design system (four colors, DM Sans, strict column tracks) and the
+full architecture spec live in the project context archive at
+`Projects/Reference/fifa-world-cup-dashboard/` (`docs/dashboard.md`, `CLAUDE.md`).
 
 ## Stack
 
@@ -15,18 +16,14 @@ tracks) and the architecture in `../CLAUDE.md`.
 
 The frontend reads **only** from the dashboard's own API — never a third-party
 API or LLM on the request path (CLAUDE.md §5.1). All data access goes through the
-single typed client in `src/lib/api.ts`.
-
-During this phase there is no backend, so the client serves a built-in mock
-dataset. The standings, form, and scorer totals in the mock are **derived** from
-the fixtures/goals using the real FIFA tiebreaker, so the tables are internally
-consistent. Flip to the real backend with two env vars — no component changes.
+single typed client in `src/lib/api.ts`, which points at the FastAPI backend via
+`NEXT_PUBLIC_API_BASE_URL`. The backend must be running for the app to show data.
 
 ## Getting started
 
 ```bash
 npm install
-cp .env.example .env.local   # defaults serve mock data
+cp .env.example .env.local   # set NEXT_PUBLIC_API_BASE_URL to your backend
 npm run dev                  # http://localhost:3000
 ```
 
@@ -34,8 +31,7 @@ npm run dev                  # http://localhost:3000
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `NEXT_PUBLIC_USE_MOCKS` | `true` | Serve the mock dataset. Set `false` to call the backend. |
-| `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:8000` | FastAPI backend base URL (used when mocks are off). |
+| `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:8000` | FastAPI backend base URL. |
 
 ## Scripts
 
