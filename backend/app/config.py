@@ -1,9 +1,4 @@
-"""Application settings, validated at startup via pydantic-settings (CLAUDE.md §10).
-
-A missing required variable (DATABASE_URL, INGEST_SECRET) raises a clear
-ValidationError at import time — never a runtime KeyError later. API keys
-default to empty strings so the app can start in keyless development mode;
-the pipeline steps that need them skip with a WARNING instead of crashing.
+"""Application settings, validated at startup via pydantic-settings.
 """
 
 from functools import lru_cache
