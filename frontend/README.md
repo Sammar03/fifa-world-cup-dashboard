@@ -4,7 +4,7 @@ The Next.js 15 frontend for the FIFA World Cup Intelligence Dashboard: live
 fixtures, group standings, top scorers, team stats, match detail, and AI match
 insights. Design system (four colors, DM Sans, strict column tracks) and the
 full architecture spec live in the project context archive at
-`Projects/Reference/fifa-world-cup-dashboard/` (`docs/dashboard.md`, `CLAUDE.md`).
+`Projects/Reference/fifa-world-cup-dashboard/` (`docs/dashboard.md`).
 
 ## Stack
 
