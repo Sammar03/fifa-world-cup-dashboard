@@ -17,7 +17,7 @@ the only thing that does, on a 60 s cadence (30 s while a match is live).
 Standings are never taken from a provider — they are recomputed from finished
 fixtures and cross-checked against football-data.org (ADR-003). Finished scores
 are verified across two sources; disagreements are flagged, logged, and served
-with `verified: false` (api-research §6).
+with `verified: false`
 
 ## Local setup
 
