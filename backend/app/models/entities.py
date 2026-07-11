@@ -1,17 +1,3 @@
-"""SQLAlchemy ORM models — implements CLAUDE.md §5.2 exactly, plus the
-documented extensions from docs/api-research.md and the frontend contract:
-
-- fixtures.verified / verified_at / mismatch_count  (api-research §6.2, §9)
-- fixtures.minute                                   (frontend Fixture.minute — live clock)
-- scorer_stats.position / clean_sheets              (frontend ScorerStat; owner decision 2026-06-12)
-- external_id_map                                   (api-research §5)
-- lineups                                           (serves FixtureDetailResponse.lineups;
-                                                     source for GK identity / clean sheets)
-- ingestion_runs                                    (observability: /health + POST /ingest response)
-
-Any further schema change requires an Alembic migration AND a CLAUDE.md §5.2 update.
-"""
-
 from datetime import datetime
 
 from sqlalchemy import (
