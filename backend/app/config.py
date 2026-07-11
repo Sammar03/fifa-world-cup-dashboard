@@ -21,7 +21,6 @@ class Settings(BaseSettings):
 
     # --- ESPN (primary live feed — no key; api-research.md §2) ---
     ESPN_API_BASE_URL: str = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world"
-    ESPN_STANDINGS_URL: str = "https://site.api.espn.com/apis/v2/sports/soccer/fifa.world"
     ESPN_TIMEOUT_SECONDS: int = 10
     ESPN_MAX_RETRIES: int = 2
 

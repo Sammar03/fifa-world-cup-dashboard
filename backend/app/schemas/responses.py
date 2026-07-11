@@ -157,10 +157,6 @@ class TeamResponse(BaseModel):
     form: list[Literal["W", "D", "L"]]
 
 
-class QueryRequest(BaseModel):
-    question: str
-
-
 class QueryResponse(BaseModel):
     answer: str
     evidence: QueryEvidence | None

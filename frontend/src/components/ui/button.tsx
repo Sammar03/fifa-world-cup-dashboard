@@ -12,13 +12,9 @@ export const buttonVariants = cva(
         primary: "bg-positive text-paper hover:brightness-110",
         secondary:
           "border border-line-strong bg-card text-ink hover:border-positive hover:text-positive",
-        ghost: "bg-transparent text-ink hover:bg-surface",
-        danger: "bg-negative text-paper hover:brightness-110",
       },
       size: {
         default: "h-10 px-4",
-        sm: "h-8 px-3 text-[0.8125rem]",
-        icon: "size-10",
       },
     },
     defaultVariants: {

@@ -3,22 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import type { FixtureDetailResponse } from "@/types";
 import { getFixture } from "@/lib/api";
+import { LIVE_POLL_INTERVAL_MS, inLiveWindow as fixtureInLiveWindow } from "@/lib/live-window";
 
 // Single-match sibling of useLiveFixtures: keeps the match detail page in sync
 // with the home board (CLAUDE.md §7.3). The server render is always fresh
 // (no ISR), but we still poll on the client while the match can change so the
 // page re-renders score/minute/goals/stats without a manual refresh.
-export const LIVE_POLL_INTERVAL_MS = 30_000;
-
-const KICKOFF_LEAD_MS = 15 * 60_000; // 15 min before kickoff
-const MATCH_MAX_DURATION_MS = 3.5 * 60 * 60_000; // ~3.5 h after kickoff
+export { LIVE_POLL_INTERVAL_MS };
 
 function inLiveWindow(data: FixtureDetailResponse, now: number): boolean {
   const f = data.fixture;
-  if (f.status === "live") return true;
-  if (f.status !== "scheduled") return false;
-  const kickoff = new Date(f.kickoff_at).getTime();
-  return kickoff - KICKOFF_LEAD_MS <= now && now <= kickoff + MATCH_MAX_DURATION_MS;
+  return fixtureInLiveWindow(f.status, f.kickoff_at, now);
 }
 
 export function useLiveFixture(
