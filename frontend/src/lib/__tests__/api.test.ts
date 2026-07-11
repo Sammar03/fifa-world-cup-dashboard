@@ -21,10 +21,11 @@ describe("api client", () => {
     await api.getFixtures({ status: "live" });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    // Reads are cached via Next's Data Cache (ISR) rather than no-store.
+    // Fixtures are live data: always fetched fresh (no ISR) by default so the
+    // list and match detail pages can never read out-of-step cache entries.
     expect(fetchMock).toHaveBeenCalledWith(
       "http://api.test/fixtures?status=live",
-      expect.objectContaining({ next: { revalidate: 30 } }),
+      expect.objectContaining({ cache: "no-store" }),
     );
   });
 

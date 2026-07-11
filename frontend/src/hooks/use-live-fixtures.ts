@@ -9,8 +9,7 @@ export const LIVE_POLL_INTERVAL_MS = 30_000;
 
 // Begin polling a little before kickoff and keep going through a match's max
 // duration, so the page catches the scheduled→live→finished transitions on its
-// own. (The page's initial data is server-cached/ISR and can lag the real match
-// state, so we can't rely on it already showing status "live".)
+// own without a manual refresh.
 const KICKOFF_LEAD_MS = 15 * 60_000; // 15 min before kickoff
 const MATCH_MAX_DURATION_MS = 3.5 * 60 * 60_000; // ~3.5 h after kickoff
 
@@ -47,20 +46,29 @@ export function useLiveFixtures(initial: Fixture[]): Fixture[] {
   useEffect(() => {
     if (!hasUnfinished) return;
 
-    const id = setInterval(async () => {
+    let cancelled = false;
+    const poll = async () => {
       // Cheap no-op outside match windows; the interval stays alive so a kickoff
       // that happens while the page is open is caught without a manual refresh.
       if (!inLiveWindow(latest.current, Date.now())) return;
       try {
         // revalidate: 0 → always fetch fresh while a match is live.
         const res = await getFixtures(undefined, { revalidate: 0 });
-        setFixtures(res.fixtures);
+        if (!cancelled) setFixtures(res.fixtures);
       } catch {
         // Network blip: keep the last good data, try again next tick.
       }
-    }, LIVE_POLL_INTERVAL_MS);
+    };
 
-    return () => clearInterval(id);
+    // Poll immediately on mount instead of waiting for the first interval tick,
+    // so navigating here never shows a stale snapshot for up to 30s.
+    poll();
+    const id = setInterval(poll, LIVE_POLL_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
   }, [hasUnfinished]);
 
   return fixtures;

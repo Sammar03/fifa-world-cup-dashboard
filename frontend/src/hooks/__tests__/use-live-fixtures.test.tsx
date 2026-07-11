@@ -37,14 +37,27 @@ describe("useLiveFixtures", () => {
     vi.useRealTimers();
   });
 
-  it("clears the polling interval on unmount", async () => {
+  it("polls immediately on mount, then clears the interval on unmount", async () => {
     vi.useFakeTimers();
+    // Keep returning a live fixture so the match stays "unfinished" across
+    // polls and the interval doesn't self-cancel between the two assertions.
+    vi.mocked(getFixtures).mockResolvedValue({
+      fixtures: [fixture("live")],
+      generated_at: "",
+    });
     const { unmount } = render(<Harness fixtures={[fixture("live")]} />);
 
+    // Fires right away instead of waiting for the first interval tick, so a
+    // page load never shows a stale snapshot for up to LIVE_POLL_INTERVAL_MS.
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(LIVE_POLL_INTERVAL_MS);
+      await vi.advanceTimersByTimeAsync(0);
     });
     expect(getFixtures).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(LIVE_POLL_INTERVAL_MS + 1);
+    });
+    expect(getFixtures).toHaveBeenCalledTimes(2);
 
     unmount();
     vi.mocked(getFixtures).mockClear();

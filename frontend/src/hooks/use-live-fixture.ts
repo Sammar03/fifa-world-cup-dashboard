@@ -5,9 +5,9 @@ import type { FixtureDetailResponse } from "@/types";
 import { getFixture } from "@/lib/api";
 
 // Single-match sibling of useLiveFixtures: keeps the match detail page in sync
-// with the home board (CLAUDE.md §7.3). The page's server render is ISR-cached
-// and can lag the real match state, so we poll on the client while the match can
-// still change and re-render score/minute/goals/stats from fresh data.
+// with the home board (CLAUDE.md §7.3). The server render is always fresh
+// (no ISR), but we still poll on the client while the match can change so the
+// page re-renders score/minute/goals/stats without a manual refresh.
 export const LIVE_POLL_INTERVAL_MS = 30_000;
 
 const KICKOFF_LEAD_MS = 15 * 60_000; // 15 min before kickoff
@@ -41,18 +41,27 @@ export function useLiveFixture(
   useEffect(() => {
     if (finished) return;
 
-    const interval = setInterval(async () => {
+    let cancelled = false;
+    const poll = async () => {
       if (!inLiveWindow(latest.current, Date.now())) return;
       try {
         // revalidate: 0 → always fetch fresh while a match is live.
         const res = await getFixture(id, { revalidate: 0 });
-        if (res) setData(res);
+        if (res && !cancelled) setData(res);
       } catch {
         // Network blip: keep the last good data, try again next tick.
       }
-    }, LIVE_POLL_INTERVAL_MS);
+    };
 
-    return () => clearInterval(interval);
+    // Poll immediately on mount instead of waiting for the first interval tick,
+    // so navigating here never shows a stale snapshot for up to 30s.
+    poll();
+    const interval = setInterval(poll, LIVE_POLL_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [id, finished]);
 
   return data;

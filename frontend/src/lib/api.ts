@@ -61,9 +61,10 @@ export async function getFixtures(
   if (params?.date) qs.set("date", params.date);
   if (params?.status) qs.set("status", params.status);
   const q = qs.toString();
-  // Default 30s; the live-polling hook passes 0 to force fresh client fetches.
+  // Fixtures change live; always fetch fresh (no ISR) so the list can't drift
+  // out of sync with the match detail page's own fresh fetch.
   return getJSON<FixturesResponse>(`/fixtures${q ? `?${q}` : ""}`, {
-    revalidate: opts?.revalidate ?? 30,
+    revalidate: opts?.revalidate ?? 0,
   });
 }
 
@@ -73,11 +74,10 @@ export async function getFixture(
   opts?: { revalidate?: number },
 ): Promise<FixtureDetailResponse | null> {
   try {
-    // Default 30s ISR for the server render; the live-polling hook passes 0 to
-    // force fresh client fetches so the match page tracks live scores in step
-    // with the home board.
+    // Same reasoning as getFixtures: always fresh, no ISR, so this page never
+    // lags or leads the home board's view of the same fixture.
     return await getJSON<FixtureDetailResponse>(`/fixtures/${id}`, {
-      revalidate: opts?.revalidate ?? 30,
+      revalidate: opts?.revalidate ?? 0,
     });
   } catch (err) {
     if (err instanceof APIError && err.status === 404) return null;
