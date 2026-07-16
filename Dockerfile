@@ -22,5 +22,7 @@ RUN chmod +x /app/scripts/start.sh
 # ${PORT:-8000}, and HF sets no PORT, so it listens on 8000.
 EXPOSE 8000
 
-# start.sh: alembic upgrade head -> seed (non-fatal) -> uvicorn on $PORT.
+# start.sh: alembic upgrade head (retried) -> uvicorn on $PORT. Seeding is NOT a
+# boot step — scripts/seed.py ships in the image but is run by hand after a
+# database rebuild (see the note in start.sh).
 CMD ["/app/scripts/start.sh"]
